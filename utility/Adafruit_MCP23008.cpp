@@ -11,55 +11,50 @@
   BSD license, all text above must be included in any redistribution
  ****************************************************/
 
-#if ARDUINO >= 100
-#include "Arduino.h"
-#else
-#include "WProgram.h"
-#endif
 #include "Adafruit_MCP23008.h"
-#include <Wire.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // RTC_DS1307 implementation
 
-void Adafruit_MCP23008::begin(uint8_t addr) {
+void Adafruit_MCP23008::begin(uint8_t addr, TwoWire &wirePort) {
   addr &= 7;
 
-  i2caddr = addr;
-
-  Wire.begin();
+  _i2cAddr = addr;
+  _i2cPort = &wirePort; //Grab which port the user wants us to use
+  
+  _i2cPort->begin();
 
   // set defaults!
-  Wire.beginTransmission(MCP23008_ADDRESS | i2caddr);
+  _i2cPort->beginTransmission(MCP23008_ADDRESS | _i2cAddr);
 #if ARDUINO >= 100
-  Wire.write((byte)MCP23008_IODIR);
-  Wire.write((byte)0xFF); // all inputs
-  Wire.write((byte)0x00);
-  Wire.write((byte)0x00);
-  Wire.write((byte)0x00);
-  Wire.write((byte)0x00);
-  Wire.write((byte)0x00);
-  Wire.write((byte)0x00);
-  Wire.write((byte)0x00);
-  Wire.write((byte)0x00);
-  Wire.write((byte)0x00);
+  _i2cPort->write((byte)MCP23008_IODIR);
+  _i2cPort->write((byte)0xFF); // all inputs
+  _i2cPort->write((byte)0x00);
+  _i2cPort->write((byte)0x00);
+  _i2cPort->write((byte)0x00);
+  _i2cPort->write((byte)0x00);
+  _i2cPort->write((byte)0x00);
+  _i2cPort->write((byte)0x00);
+  _i2cPort->write((byte)0x00);
+  _i2cPort->write((byte)0x00);
+  _i2cPort->write((byte)0x00);
 #else
-  Wire.send(MCP23008_IODIR);
-  Wire.send(0xFF); // all inputs
-  Wire.send(0x00);
-  Wire.send(0x00);
-  Wire.send(0x00);
-  Wire.send(0x00);
-  Wire.send(0x00);
-  Wire.send(0x00);
-  Wire.send(0x00);
-  Wire.send(0x00);
-  Wire.send(0x00);
+  _i2cPort->send(MCP23008_IODIR);
+  _i2cPort->send(0xFF); // all inputs
+  _i2cPort->send(0x00);
+  _i2cPort->send(0x00);
+  _i2cPort->send(0x00);
+  _i2cPort->send(0x00);
+  _i2cPort->send(0x00);
+  _i2cPort->send(0x00);
+  _i2cPort->send(0x00);
+  _i2cPort->send(0x00);
+  _i2cPort->send(0x00);
 #endif
-  Wire.endTransmission();
+  _i2cPort->endTransmission();
 }
 
-void Adafruit_MCP23008::begin(void) { begin(0); }
+void Adafruit_MCP23008::begin(void) { begin(0, Wire); }
 
 void Adafruit_MCP23008::pinMode(uint8_t p, uint8_t d) {
   uint8_t iodir;
@@ -137,30 +132,30 @@ uint8_t Adafruit_MCP23008::digitalRead(uint8_t p) {
 }
 
 uint8_t Adafruit_MCP23008::read8(uint8_t addr) {
-  Wire.beginTransmission(MCP23008_ADDRESS | i2caddr);
+  _i2cPort->beginTransmission(MCP23008_ADDRESS | _i2cAddr);
 #if ARDUINO >= 100
-  Wire.write((byte)addr);
+  _i2cPort->write((byte)addr);
 #else
-  Wire.send(addr);
+  _i2cPort->send(addr);
 #endif
-  Wire.endTransmission();
-  Wire.requestFrom(MCP23008_ADDRESS | i2caddr, 1);
+  _i2cPort->endTransmission();
+  _i2cPort->requestFrom(MCP23008_ADDRESS | _i2cAddr, 1);
 
 #if ARDUINO >= 100
-  return Wire.read();
+  return _i2cPort->read();
 #else
-  return Wire.receive();
+  return _i2cPort->receive();
 #endif
 }
 
 void Adafruit_MCP23008::write8(uint8_t addr, uint8_t data) {
-  Wire.beginTransmission(MCP23008_ADDRESS | i2caddr);
+  _i2cPort->beginTransmission(MCP23008_ADDRESS | _i2cAddr);
 #if ARDUINO >= 100
-  Wire.write((byte)addr);
-  Wire.write((byte)data);
+  _i2cPort->write((byte)addr);
+  _i2cPort->write((byte)data);
 #else
-  Wire.send(addr);
-  Wire.send(data);
+  _i2cPort->send(addr);
+  _i2cPort->send(data);
 #endif
-  Wire.endTransmission();
+  _i2cPort->endTransmission();
 }

@@ -13,10 +13,19 @@
 
 #ifndef _ADAFRUIT_MCP23008_H
 #define _ADAFRUIT_MCP23008_H
+
+#if ARDUINO >= 100
+#include "Arduino.h"
+#else
+#include "WProgram.h"
+#endif
+
 // Don't forget the Wire library
+#include <Wire.h>
+
 class Adafruit_MCP23008 {
 public:
-  void begin(uint8_t addr);
+  void begin(uint8_t addr, TwoWire &wirePort = Wire);
   void begin(void);
 
   void pinMode(uint8_t p, uint8_t d);
@@ -27,7 +36,8 @@ public:
   void writeGPIO(uint8_t);
 
 private:
-  uint8_t i2caddr;
+  TwoWire * _i2cPort; //The generic connection to user's chosen I2C hardware
+  uint8_t _i2cAddr;
   uint8_t read8(uint8_t addr);
   void write8(uint8_t addr, uint8_t data);
 };

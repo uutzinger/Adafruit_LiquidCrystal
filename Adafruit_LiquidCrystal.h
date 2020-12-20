@@ -156,7 +156,7 @@ public:
    * @param charsize Sets the charactersize
    * @return Returns true when connection was successful
    */
-  void begin(uint8_t cols, uint8_t rows, uint8_t charsize = LCD_5x8DOTS);
+  void begin(uint8_t cols, uint8_t rows, uint8_t charsize = LCD_5x8DOTS, TwoWire &wirePort = Wire);
 
   /*!
    * @brief High-level command to clear the display

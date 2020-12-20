@@ -141,10 +141,10 @@ void Adafruit_LiquidCrystal::init(uint8_t fourbitmode, uint8_t rs, uint8_t rw,
 }
 
 void Adafruit_LiquidCrystal::begin(uint8_t cols, uint8_t lines,
-                                   uint8_t dotsize) {
+                                   uint8_t dotsize, TwoWire &wirePort) {
   // check if i2c
   if (_i2cAddr != 255) {
-    _i2c.begin(_i2cAddr);
+    _i2c.begin(_i2cAddr, wirePort);
 
     _i2c.pinMode(7, OUTPUT);    // backlight
     _i2c.digitalWrite(7, HIGH); // backlight
